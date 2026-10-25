@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatBytes, formatDateTime, formatExactBytes, getExtension, getFileType } from './fileInfo';
+import { formatBytes, formatDateTime, formatDaysAgo, formatExactBytes, getExtension, getFileType } from './fileInfo';
 
 describe('formatBytes', () => {
   it.each([
@@ -73,5 +73,22 @@ describe('formatDateTime', () => {
   it('uses the usual English order for each English locale', () => {
     expect(format('en-US')).toEqual({ text: 'Oct 25, 2026, 2:30:05 PM', lang: 'en-US', dir: 'ltr' });
     expect(format('en-GB')).toEqual({ text: '25 Oct 2026, 14:30:05', lang: 'en-GB', dir: 'ltr' });
+  });
+});
+
+describe('formatDaysAgo', () => {
+  const now = new Date(2026, 9, 25, 9, 0).getTime();
+
+  it.each([
+    [new Date(2026, 9, 22, 18, 0).getTime(), 'לפני 3 ימים'],
+    [new Date(2026, 9, 24, 23, 59).getTime(), 'לפני 1 ימים'],
+    [new Date(2026, 9, 25, 0, 1).getTime(), 'לפני 0 ימים'],
+    [new Date(2025, 9, 25, 9, 0).getTime(), 'לפני 365 ימים'],
+  ])('shows %d as %s', (timestamp, expected) => {
+    expect(formatDaysAgo(timestamp, now)).toEqual({ text: expected, lang: 'he', dir: 'rtl' });
+  });
+
+  it('treats future timestamps as today', () => {
+    expect(formatDaysAgo(now + 5 * 24 * 60 * 60 * 1000, now).text).toBe('לפני 0 ימים');
   });
 });

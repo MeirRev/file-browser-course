@@ -180,3 +180,18 @@ export function formatDateTime(timestamp: number, locale = getDefaultLocale(), t
     dir: RTL_LANGUAGES.has(language) ? 'rtl' : 'ltr',
   };
 }
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+/**
+ * How many calendar days ago the timestamp was, in Hebrew and always as "לפני N ימים".
+ * Days are counted in the viewer's time zone; future timestamps count as 0 days.
+ */
+export function formatDaysAgo(timestamp: number, now = Date.now()): LocalizedText {
+  const startOfDay = (time: number) => {
+    const date = new Date(time);
+    return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+  };
+  const days = Math.max(0, Math.round((startOfDay(now) - startOfDay(timestamp)) / MS_PER_DAY));
+  return { text: `לפני ${days} ימים`, lang: 'he', dir: 'rtl' };
+}

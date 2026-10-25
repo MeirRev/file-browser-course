@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { FileEntry } from '../lib/entries';
 import { describeError } from '../lib/errors';
-import { formatBytes, formatDateTime, formatExactBytes, getFileType } from '../lib/fileInfo';
+import { formatBytes, formatDateTime, formatDaysAgo, formatExactBytes, getFileType } from '../lib/fileInfo';
 import { DetailsList, type DetailItem } from './DetailsList';
 import { ImageDetails } from './ImageDetails';
 
@@ -46,7 +46,13 @@ function FileDetails({ entry, file }: { entry: FileEntry; file: File }) {
     { label: 'Name', value: entry.name },
     { label: 'Size', value: `${formatBytes(file.size)} (${formatExactBytes(file.size)})` },
     { label: 'Type', value: type.mime ? `${type.label} (${type.mime})` : type.label },
-    { label: 'Last modified', value: modified.text, lang: modified.lang, dir: modified.dir },
+    {
+      label: 'Last modified',
+      value: modified.text,
+      lang: modified.lang,
+      dir: modified.dir,
+      note: formatDaysAgo(file.lastModified),
+    },
     { label: 'Path', value: entry.path },
   ];
 

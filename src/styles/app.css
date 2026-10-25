@@ -238,6 +238,11 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+.details-note {
+  margin-inline-start: var(--space-3);
+  color: var(--color-text-muted);
+}
+
 .preview {
   display: flex;
   justify-content: center;
