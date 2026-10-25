@@ -1,7 +1,7 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 import type { DirectoryEntry, Entry, FileEntry } from '../lib/entries';
 import { describeError } from '../lib/errors';
-import { getFileType, type FileCategory } from '../lib/fileInfo';
+import { getFileType, isLargeFile, type FileCategory } from '../lib/fileInfo';
 
 interface TreeViewProps {
   root: DirectoryEntry;
@@ -121,6 +121,22 @@ const CATEGORY_ICONS: Record<FileCategory, string> = {
 function FileNode({ entry, depth, selectedPath, onSelect }: NodeProps<FileEntry>) {
   const selected = entry.path === selectedPath;
   const { category } = getFileType(entry.name);
+  const [large, setLarge] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    // A file that cannot be read simply gets no badge; the details panel reports the error.
+    entry.getFile().then(
+      (file) => {
+        if (!cancelled) setLarge(isLargeFile(file.size));
+      },
+      () => {},
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [entry]);
+
   return (
     <li className="tree-item" role="treeitem" aria-selected={selected}>
       <button
@@ -134,6 +150,7 @@ function FileNode({ entry, depth, selectedPath, onSelect }: NodeProps<FileEntry>
           {CATEGORY_ICONS[category]}
         </span>
         <span className="tree-name">{entry.name}</span>
+        {large && <span className="tree-badge">Large file</span>}
       </button>
     </li>
   );

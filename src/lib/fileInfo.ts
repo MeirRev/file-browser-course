@@ -131,6 +131,13 @@ export function formatBytes(bytes: number): string {
   return `${value.toFixed(1)} ${SIZE_UNITS[unit]}`;
 }
 
+/** Files strictly larger than this (10 MB, binary units like {@link formatBytes}) count as large. */
+export const LARGE_FILE_BYTES = 10 * 1024 ** 2;
+
+export function isLargeFile(bytes: number): boolean {
+  return bytes > LARGE_FILE_BYTES;
+}
+
 /** "1,536 bytes" — the exact size, for display next to {@link formatBytes}. */
 export function formatExactBytes(bytes: number, locale?: string): string {
   return `${bytes.toLocaleString(locale)} ${bytes === 1 ? 'byte' : 'bytes'}`;

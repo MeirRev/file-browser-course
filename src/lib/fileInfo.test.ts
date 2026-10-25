@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatBytes, formatDateTime, formatDaysAgo, formatExactBytes, getExtension, getFileType } from './fileInfo';
+import { formatBytes, formatDateTime, formatDaysAgo, formatExactBytes, getExtension, getFileType, isLargeFile } from './fileInfo';
 
 describe('formatBytes', () => {
   it.each([
@@ -24,6 +24,17 @@ describe('formatExactBytes', () => {
   it('uses the singular for one byte', () => {
     expect(formatExactBytes(1, 'en-US')).toBe('1 byte');
     expect(formatExactBytes(1536, 'en-US')).toBe('1,536 bytes');
+  });
+});
+
+describe('isLargeFile', () => {
+  it.each([
+    [0, false],
+    [10 * 1024 ** 2, false],
+    [10 * 1024 ** 2 + 1, true],
+    [2 * 1024 ** 3, true],
+  ])('treats %d bytes as large: %s', (bytes, expected) => {
+    expect(isLargeFile(bytes)).toBe(expected);
   });
 });
 

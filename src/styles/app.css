@@ -181,6 +181,18 @@ body {
   white-space: nowrap;
 }
 
+.tree-badge {
+  flex: none;
+  margin-inline-start: auto;
+  padding-inline: var(--space-1);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+
 .tree-status {
   padding-block: var(--space-1);
   padding-inline: calc(var(--space-3) + var(--icon-size) + var(--depth, 0) * var(--tree-indent)) var(--space-3);
