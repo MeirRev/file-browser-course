@@ -63,3 +63,7 @@
 
 - לבצע commit ל-`.claude/settings.json`, לשינוי ב-`.gitignore` ולתיקייה `docs/exercise-1/`.
 - לא לכלול ב-commit את `.claude/settings.local.json` ואת צילומי ה-`/status`.
+
+## אחרי המשימה: הסרת הגדרות `model`
+
+בדיקת הקדימות הושלמה ונשמרה ב-commit `8efb700`. לאחר מכן הוסר המפתח `model` מ-`.claude/settings.json` ומ-`.claude/settings.local.json`, כדי לחזור לבחירת המודל הרגילה. ההרשאות נשארו ללא שינוי: `npm run check` ברמת Project ו-`npm run dev` ברמת Local, דרך Bash ו-PowerShell.
