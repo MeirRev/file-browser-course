@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { FileEntry } from '../lib/entries';
 import { describeError } from '../lib/errors';
 import { formatBytes, formatDateTime, formatDaysAgo, formatExactBytes, getFileType } from '../lib/fileInfo';
+import { isPdf, readPdfPageCount } from '../lib/pdf';
 import { DetailsList, type DetailItem } from './DetailsList';
 import { ImageDetails } from './ImageDetails';
 
@@ -41,6 +42,7 @@ export function DetailsPanel({ entry }: { entry: FileEntry }) {
 
 function FileDetails({ entry, file }: { entry: FileEntry; file: File }) {
   const type = getFileType(entry.name, file.type);
+  const pageCount = usePdfPageCount(file, isPdf(entry.name, type.mime));
   const modified = formatDateTime(file.lastModified);
   const items: DetailItem[] = [
     { label: 'Name', value: entry.name },
@@ -55,6 +57,7 @@ function FileDetails({ entry, file }: { entry: FileEntry; file: File }) {
     },
     { label: 'Path', value: entry.path },
   ];
+  if (pageCount !== undefined) items.push({ label: 'Pages', value: describePageCount(pageCount) });
 
   return (
     <>
@@ -67,4 +70,34 @@ function FileDetails({ entry, file }: { entry: FileEntry; file: File }) {
       {type.category === 'image' && <ImageDetails file={file} name={entry.name} />}
     </>
   );
+}
+
+/** `undefined` for files that aren't PDFs, `'loading'` while reading, `null` when unreadable. */
+type PageCount = number | null | 'loading' | undefined;
+
+function usePdfPageCount(file: File, pdf: boolean): PageCount {
+  const [pageCount, setPageCount] = useState<PageCount>(undefined);
+
+  useEffect(() => {
+    if (!pdf) {
+      setPageCount(undefined);
+      return;
+    }
+    let cancelled = false;
+    setPageCount('loading');
+    void readPdfPageCount(file).then((count) => {
+      if (!cancelled) setPageCount(count);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [file, pdf]);
+
+  return pdf ? pageCount : undefined;
+}
+
+function describePageCount(pageCount: Exclude<PageCount, undefined>): string {
+  if (pageCount === 'loading') return 'Reading…';
+  if (pageCount === null) return 'Unable to read the page count for this PDF.';
+  return String(pageCount);
 }
