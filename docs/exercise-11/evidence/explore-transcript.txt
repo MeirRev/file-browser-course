@@ -1,0 +1,49 @@
+Focused excerpt from the main conversation (exercise 11).
+Source: the Agent tool call as sent by the main agent, and the subagent's
+final report as delivered back to the main conversation. Text is copied
+verbatim; only the 2-space indentation the harness adds to the report was removed.
+
+=== Agent tool call ===
+
+description: Trace tree search flow
+subagent_type: Explore
+prompt:
+Read-only task in the React + TypeScript (Vite) project at C:\Users\wwwme\Desktop\file browser. Do NOT modify any files and do NOT run tests, builds, or the dev server.
+
+Investigate the tree search feature:
+1. How a search query flows from the input field (component), through the directory scanning/walking logic (likely in src/lib/), to how results are rendered.
+2. How the code prevents stale search results from overwriting newer ones (e.g. request/generation counters, AbortController, cancellation flags, effect cleanup, debouncing).
+
+Search breadth: medium.
+
+Return a summary of at most 8 bullet points. Each bullet must cite specific files and line numbers (format: path/to/file.ts:LINE). Cover the flow in order (input → state → scan → results display), then the stale-result protection. If something you'd expect is missing (e.g. no stale-result protection exists, or there's a gap/race), say so explicitly rather than guessing. Write the summary in Hebrew; keep code identifiers and file paths in English.
+
+=== Task completion notification (usage) ===
+
+<summary>Agent "Trace tree search flow" finished</summary>
+<usage><subagent_tokens>29767</subagent_tokens><tool_uses>6</tool_uses><duration_ms>37073</duration_ms></usage>
+
+=== Subagent final report ===
+
+סיכום זרימת החיפוש בעץ וההגנה מפני תוצאות ישנות:
+
+- **קלט ו-state:** שדה החיפוש נמצא ב-`App`, ב-C:\Users\wwwme\Desktop\file browser\src\App.tsx:43-51. כל הקשה קוראת מיד ל-`setQuery` (שורה 49), וה-state מוגדר בשורה 15. השדה מושבת כשאין `root` (שורה 50).
+
+- **מעבר בין תצוגות:** כש-`root` קיים ו-`query !== ''`, מוצג `<FilterResults>` במקום `<TreeView>` (App.tsx:53-62). הוא מקבל את `root`, `query`, `selectedPath` ו-`onSelect`. ה-`key={openCount}` (App.tsx:55) יוצר instance חדש בכל פתיחת תיקייה, כי `openCount` עולה ב-`handleOpen` (App.tsx:19).
+
+- **הפעלת הסריקה:** ב-C:\Users\wwwme\Desktop\file browser\src\components\FilterResults.tsx:24-41 יש `useEffect` שתלוי ב-`[root, query]`. הוא מאפס את ה-state ל-`'searching'` (שורה 28) וקורא ל-`searchTree(root, query, controller.signal)` (שורה 29). כשהסריקה מסתיימת הוא מעביר את ה-state ל-`done` או ל-`error` (שורות 30-35).
+
+- **הסריקה עצמה:** `searchTree` ב-C:\Users\wwwme\Desktop\file browser\src\lib\search.ts:44-50 קורא ל-`searchDirectory` (search.ts:53-84), שעובר על כל העץ באופן רקורסיבי ובמקביל דרך `Promise.all` (שורות 73-81). ההתאמה לפי `name.includes(query)`, תלוית אותיות גדולות/קטנות (search.ts:32-34). תיקייה שהשם שלה תואם מחזירה את כל התוכן שלה (`insideMatch`/`includeAll`, שורה 60). תיקייה שלא ניתן לקרוא נרשמת ב-`failures` (שורות 65-69), ובסוף `failures` ממוינים לפי path (שורה 48).
+
+- **הצגת התוצאות:** ב-FilterResults.tsx:43-56 מוצגים "Searching…" בזמן הסריקה, או הודעת שגיאה. אם חלק מהתיקיות לא נקראו מוצגת התראת "Search incomplete" (שורות 61-74). העץ התואם מוצג דרך `MatchDirectoryNode` הרקורסיבי (שורות 97-145), שמשתמש ב-`FileNode`/`TreeStatus` מ-`TreeView`. כשאין התאמות מוצגת הודעת "No file or folder names contain" (שורות 80-84).
+
+- **הגנה מפני תוצאות ישנות (שתי שכבות):** ה-cleanup של ה-effect (FilterResults.tsx:37-40) מסמן `cancelled = true` וגם קורא ל-`controller.abort()`.
+  - הדגל `cancelled` (שורות 25, 31, 34) הוא שמונע מחיפוש ישן לדרוס תוצאות חדשות: כל `setState` מתבצע רק `if (!cancelled)`.
+  - ה-`AbortSignal` רק עוצר את הסריקה מוקדם: יש בדיקות `signal?.throwIfAborted()` לפני ואחרי כל `listChildren` (search.ts:61, 66, 71). ה-rejection שנוצר מה-abort נבלע בשקט, כי `cancelled` כבר `true`.
+
+- **פערים שמצאתי:**
+  1. אין debounce. כל הקשה מפעילה סריקה מלאה של העץ, ומבטלת את הקודמת (App.tsx:49 יחד עם FilterResults.tsx:41). זה בזבוז I/O בעצים גדולים, אבל לא באג נכונות.
+  2. ה-signal לא מועבר ל-`directory.listChildren()` (search.ts:64). קריאה שכבר התחילה לא נקטעת, והסריקה נעצרת רק בגבול ה-await הבא. ענפים אחרים שכבר רצים ב-`Promise.all` ממשיכים עד שהם מגיעים לבדיקה הבאה שלהם. גם כאן התוצאה לא דולפת ל-UI בזכות `cancelled`.
+  3. לא מצאתי race שבו תוצאה ישנה מגיעה למסך: הדגל המקומי לכל הרצת effect, יחד עם ה-remount דרך `key={openCount}`, מכסים את זה.
+
+- **הערה קטנה:** כשה-`query` הופך לריק, `FilterResults` עושה unmount (App.tsx:53). ה-cleanup מבטל את החיפוש, וכשמקלידים שוב ה-component נבנה מחדש עם state התחלתי `'searching'` (FilterResults.tsx:22). זה מונע הבהוב של תוצאות קודמות. ההיגיון ב-`src/lib/search.ts` נשאר נקי מ-React, בהתאם לכלל הפרויקט.
