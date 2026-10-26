@@ -66,4 +66,4 @@
 
 ## אחרי המשימה: הסרת הגדרות `model`
 
-בדיקת הקדימות הושלמה ונשמרה ב-commit `8efb700`. לאחר מכן הוסר המפתח `model` מ-`.claude/settings.json` ומ-`.claude/settings.local.json`, כדי לחזור לבחירת המודל הרגילה. ההרשאות נשארו ללא שינוי: `npm run check` ברמת Project ו-`npm run dev` ברמת Local, דרך Bash ו-PowerShell.
+בדיקת הקדימות הושלמה ונשמרה ב-commit `356278c`. לאחר מכן הוסר המפתח `model` מ-`.claude/settings.json` ומ-`.claude/settings.local.json`, כדי לחזור לבחירת המודל הרגילה. ההרשאות נשארו ללא שינוי: `npm run check` ברמת Project ו-`npm run dev` ברמת Local, דרך Bash ו-PowerShell.
