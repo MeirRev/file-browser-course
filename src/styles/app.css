@@ -124,6 +124,49 @@ body {
   padding: var(--space-5);
 }
 
+/* Filter */
+
+.tree-filter {
+  padding: 0 var(--space-3) var(--space-2);
+}
+
+.tree-filter-input {
+  width: 100%;
+  padding: var(--space-1) var(--space-2);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.tree-filter-input:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: calc(var(--focus-ring-width) * -1);
+}
+
+.tree-filter-input:disabled {
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.filter-alert {
+  margin-block-end: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
+}
+
+.filter-alert-title {
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+}
+
+.filter-failures {
+  margin: var(--space-1) 0 0;
+  padding-inline-start: var(--space-4);
+}
+
 /* Tree */
 
 .tree,

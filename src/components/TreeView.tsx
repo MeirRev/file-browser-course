@@ -118,7 +118,7 @@ const CATEGORY_ICONS: Record<FileCategory, string> = {
   other: '📄',
 };
 
-function FileNode({ entry, depth, selectedPath, onSelect }: NodeProps<FileEntry>) {
+export function FileNode({ entry, depth, selectedPath, onSelect }: NodeProps<FileEntry>) {
   const selected = entry.path === selectedPath;
   const { category } = getFileType(entry.name);
   const [large, setLarge] = useState(false);
@@ -156,7 +156,7 @@ function FileNode({ entry, depth, selectedPath, onSelect }: NodeProps<FileEntry>
   );
 }
 
-function TreeStatus({ depth, tone, children }: { depth: number; tone?: 'error'; children: string }) {
+export function TreeStatus({ depth, tone, children }: { depth: number; tone?: 'error'; children: string }) {
   return (
     <li className={tone === 'error' ? 'tree-status tree-status--error' : 'tree-status'} style={depthStyle(depth)}>
       {children}
@@ -164,6 +164,6 @@ function TreeStatus({ depth, tone, children }: { depth: number; tone?: 'error'; 
   );
 }
 
-function depthStyle(depth: number): CSSProperties {
+export function depthStyle(depth: number): CSSProperties {
   return { '--depth': depth } as CSSProperties;
 }
