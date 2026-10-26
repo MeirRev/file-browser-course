@@ -1,0 +1,76 @@
+Exercise 12 - codebase-memory-mcp graph transcript excerpt
+Source: Claude Code session transcript (local JSONL log), session 7c6c676d-299c-4694-a8ff-4455dd8dd854
+Tool calls and results below are copied verbatim from the log; nothing was re-run.
+
+============================================================
+1. index_status - index is ready
+============================================================
+[tool call] 2026-10-26T17:47:39.266Z
+tool: mcp__codebase-memory-mcp__index_status
+parameters: {
+  "project": "C-Users-wwwme-Desktop-file-browser"
+}
+
+[tool result] 2026-10-26T17:47:41.434Z
+project: C-Users-wwwme-Desktop-file-browser
+nodes: 537
+edges: 1187
+status: ready
+root_path: "C:/Users/wwwme/Desktop/file browser"
+indexed_at: 2026-10-26T17:47:37Z
+parse_partial:
+  files: 0
+  count: 1
+  truncated: true
+  omitted: 1
+parse_unusable:
+  files: 0
+  count: 0
+  truncated: false
+skipped:
+  files: 0
+  count: 0
+  truncated: false
+not_indexed:
+  dirs: 0
+  dirs_count: 4
+  files: 0
+  files_count: 37
+  truncated: true
+  dirs_omitted: 4
+  files_omitted: 37
+cross_repo:
+  status: never_run
+doc_links:
+  mentions: 40
+  unresolved:
+    ambiguous: 12
+    below_bar_tier: 4
+    missing: 1
+  status: ok
+watch:
+  watched: true
+  strategy: pending
+  poll_interval_ms: 5000
+
+============================================================
+2. trace_path - who calls searchTree?
+============================================================
+[tool call] 2026-10-26T17:47:40.865Z
+tool: mcp__codebase-memory-mcp__trace_path
+parameters: {
+  "project": "C-Users-wwwme-Desktop-file-browser",
+  "function_name": "searchTree",
+  "direction": "inbound",
+  "depth": 1,
+  "include_tests": true
+}
+
+[tool result] 2026-10-26T17:47:41.469Z
+function: searchTree
+direction: inbound
+callers_total: 2
+callers_total_relation: eq
+callers: 2  (cols: qn hop test)
+  C-Users-wwwme-Desktop-file-browser.src.lib.search.test 1 true
+  C-Users-wwwme-Desktop-file-browser.src.components.FilterResults.FilterResults 1 false
